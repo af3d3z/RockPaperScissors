@@ -32,6 +32,7 @@ import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
 import com.alonso.rockpaperscissors.ui.theme.RockPaperScissorsTheme
 import kotlin.random.Random
+import kotlin.random.nextInt
 
 class MainActivity : ComponentActivity() {
     override fun onCreate(savedInstanceState: Bundle?) {
@@ -53,13 +54,8 @@ fun RPS(modifier: Modifier){
     var iconoMaquina by rememberSaveable {mutableStateOf(R.drawable.bot)}
     var maquina by rememberSaveable { mutableStateOf(0) }
     var jugador by rememberSaveable { mutableStateOf(0) }
-    var tiradaMaquina = 0
-    when (tiradaMaquina){
-        0 -> R.drawable.bot
-        1 -> iconoMaquina = R.drawable.rocks
-        2 -> iconoMaquina = R.drawable.paper
-        3 -> iconoMaquina = R.drawable.scissor
-    }
+    var tiradaMaquina by rememberSaveable{mutableStateOf(0)}
+
     Column (modifier = modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
             text = "Rock Paper Scissors!",
@@ -97,6 +93,11 @@ fun RPS(modifier: Modifier){
                     .size(100.dp)
                     .clickable {
                         tiradaMaquina = tiradaMaquina()
+                        when(tiradaMaquina) {
+                            1-> iconoMaquina = R.drawable.rocks
+                            2-> iconoMaquina = R.drawable.paper
+                            3-> iconoMaquina = R.drawable.scissor
+                        }
                     }
             )
             Image(
@@ -121,5 +122,5 @@ fun RPS(modifier: Modifier){
 }
 
 fun tiradaMaquina(): Int {
-    return Random.nextInt(3)
+    return Random.nextInt(1..3)
 }

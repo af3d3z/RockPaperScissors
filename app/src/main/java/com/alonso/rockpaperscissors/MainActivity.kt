@@ -6,21 +6,28 @@ import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
+import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
+import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.width
+import androidx.compose.material3.Card
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
@@ -58,6 +65,8 @@ fun RPS(modifier: Modifier){
     var iconoMaquina by rememberSaveable {mutableStateOf(R.drawable.bot)}
     var maquina by rememberSaveable { mutableStateOf(0) }
     var jugador by rememberSaveable { mutableStateOf(0) }
+    var popUp by rememberSaveable{mutableStateOf(false)}
+    var ganador by remember {mutableStateOf(0)}
     var tiradaMaquina by rememberSaveable{mutableStateOf(0)}
     var ctx = LocalContext.current
 
@@ -105,12 +114,22 @@ fun RPS(modifier: Modifier){
                         }
                         var puntuacion = checkWinner(playerMove = 1, machineMove = tiradaMaquina, ctx = ctx)
                         when(puntuacion){
-                            1 -> jugador++
-                            2 -> maquina++
+                            1 -> {
+                                jugador++
+                                ganador = 1
+                            }
+                            2 -> {
+                                maquina++
+                                ganador = 2
+                            }
                         }
-                        if(jugador >= 5 || maquina >= 5){
+
+                        if(jugador >= 5){
                             jugador = 0
+                            popUp = true
+                        }else if (maquina >= 5) {
                             maquina = 0
+                            popUp = true
                         }
                     }
             )
@@ -131,6 +150,21 @@ fun RPS(modifier: Modifier){
                     .padding(5.dp)
 
             )
+        }
+    }
+    AnimatedVisibility(visible = popUp) {
+        Column (modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+            Box (contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize().width(200.dp).height(200.dp) ) {
+                Text(
+                    text = if (ganador == 1) "Gana el jugador." else "Gana la máquina.",
+                    fontSize = 40.sp,
+                    modifier = Modifier.fillMaxSize().clickable {
+                        popUp = false
+                    },
+                    textAlign = TextAlign.Center
+                )
+
+            }
         }
     }
 }
@@ -160,3 +194,4 @@ fun checkWinner(playerMove: Int, machineMove: Int, ctx: Context): Int {
 
     return state
 }
+

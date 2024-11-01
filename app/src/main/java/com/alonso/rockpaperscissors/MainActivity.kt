@@ -2,12 +2,16 @@ package com.alonso.rockpaperscissors
 
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
 import androidx.activity.ComponentActivity
 import androidx.activity.compose.setContent
 import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -19,6 +23,8 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material3.Card
 import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.HorizontalDivider
@@ -85,14 +91,14 @@ fun RPS(modifier: Modifier){
                 .size(128.dp)
         )
         Text(
-            text = "Máquina: $maquina",
+            text = "Computer: $maquina",
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
             modifier = modifier
         )
         HorizontalDivider(thickness = 2.dp, color = Color.LightGray, modifier = modifier.fillMaxWidth(0.8f).padding(10.dp))
         Text(
-            text = "Jugador: $jugador",
+            text = "Player: $jugador",
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
             modifier = modifier
@@ -100,7 +106,7 @@ fun RPS(modifier: Modifier){
         Row(modifier = modifier, horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
             Image(
                 painter = painterResource(R.drawable.rocks),
-                contentDescription = "Piedra",
+                contentDescription = "Rock",
                 contentScale = ContentScale.FillBounds,
                 modifier = modifier
                     .padding(5.dp)
@@ -124,10 +130,8 @@ fun RPS(modifier: Modifier){
                             }
                         }
 
-                        if(jugador >= 5){
+                        if(jugador >= 5 || maquina >= 5){
                             jugador = 0
-                            popUp = true
-                        }else if (maquina >= 5) {
                             maquina = 0
                             popUp = true
                         }
@@ -135,32 +139,87 @@ fun RPS(modifier: Modifier){
             )
             Image(
                 painter = painterResource(R.drawable.paper),
-                contentDescription = "Papel",
+                contentDescription = "Paper",
                 contentScale = ContentScale.FillBounds,
                 modifier = modifier
                     .padding(5.dp)
                     .size(100.dp)
+                    .clickable {
+                        tiradaMaquina = tiradaMaquina()
+                        when(tiradaMaquina) {
+                            1-> iconoMaquina = R.drawable.rocks
+                            2-> iconoMaquina = R.drawable.paper
+                            3-> iconoMaquina = R.drawable.scissor
+                        }
+                        var puntuacion = checkWinner(playerMove = 2, machineMove = tiradaMaquina, ctx = ctx)
+                        when(puntuacion){
+                            1 -> {
+                                jugador++
+                                ganador = 1
+                            }
+                            2 -> {
+                                maquina++
+                                ganador = 2
+                            }
+                        }
+
+                        if(jugador >= 5 || maquina >= 5){
+                            jugador = 0
+                            maquina = 0
+                            popUp = true
+                        }
+
+                    }
             )
             Image(
                 painter = painterResource(R.drawable.scissor),
-                contentDescription = "Tijeras",
+                contentDescription = "Scissors",
                 contentScale = ContentScale.FillBounds,
                 modifier = modifier
                     .size(100.dp)
                     .padding(5.dp)
+                    .clickable {
+                        tiradaMaquina = tiradaMaquina()
+                        when(tiradaMaquina) {
+                            1-> iconoMaquina = R.drawable.rocks
+                            2-> iconoMaquina = R.drawable.paper
+                            3-> iconoMaquina = R.drawable.scissor
+                        }
+                        var puntuacion = checkWinner(playerMove = 3, machineMove = tiradaMaquina, ctx = ctx)
+                        when(puntuacion){
+                            1 -> {
+                                jugador++
+                                ganador = 1
+                            }
+                            2 -> {
+                                maquina++
+                                ganador = 2
+                            }
+                        }
 
+                        if(jugador >= 5 || maquina >= 5){
+                            jugador = 0
+                            maquina = 0
+                            popUp = true
+                        }
+                }
             )
         }
     }
     AnimatedVisibility(visible = popUp) {
-        Column (modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-            Box (contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize().width(200.dp).height(200.dp) ) {
+        Column (modifier = Modifier.fillMaxSize().clickable { popUp = false }, horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+            Box (
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .width(200.dp)
+                    .height(200.dp)
+                    .background(Color.White)
+                    .border(BorderStroke(2.dp, Color.Black), RoundedCornerShape(25.dp)) ) {
                 Text(
                     text = if (ganador == 1) "Gana el jugador." else "Gana la máquina.",
                     fontSize = 40.sp,
-                    modifier = Modifier.fillMaxSize().clickable {
-                        popUp = false
-                    },
+                    lineHeight = 40.sp,
+                    modifier = Modifier.wrapContentSize(),
                     textAlign = TextAlign.Center
                 )
 
@@ -170,7 +229,9 @@ fun RPS(modifier: Modifier){
 }
 
 fun tiradaMaquina(): Int {
-    return Random.nextInt(1..3)
+    val tirada = Random.nextInt(1..3)
+    Log.d(":::RPS", "Máquina: $tirada")
+    return tirada
 }
 
 /**
@@ -181,6 +242,7 @@ fun tiradaMaquina(): Int {
  */
 fun checkWinner(playerMove: Int, machineMove: Int, ctx: Context): Int {
     var state = 0
+    Log.d(":::RPS", "Player Move: $playerMove Machine Move: $machineMove")
     if(playerMove == 1 && machineMove == 3 || playerMove == 2 && machineMove == 1 || playerMove == 3 && machineMove == 2) {
         state = 1
         Toast.makeText(ctx, "Gana el jugador", Toast.LENGTH_LONG).show()

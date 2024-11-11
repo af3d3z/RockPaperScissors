@@ -1,0 +1,43 @@
+{
+  "formatVersion": 1,
+  "database": {
+    "version": 1,
+    "identityHash": "02262d1db16edcef147223b7cee05525",
+    "entities": [
+      {
+        "tableName": "VictoriaEntity",
+        "createSql": "CREATE TABLE IF NOT EXISTS `${TABLE_NAME}` (`nombre` TEXT NOT NULL, `partidasGanadas` INTEGER NOT NULL, `luchasGanadas` INTEGER NOT NULL, PRIMARY KEY(`nombre`))",
+        "fields": [
+          {
+            "fieldPath": "nombre",
+            "columnName": "nombre",
+            "affinity": "TEXT",
+            "notNull": true
+          },
+          {
+            "fieldPath": "partidasGanadas",
+            "columnName": "partidasGanadas",
+            "affinity": "INTEGER",
+            "notNull": true
+          },
+          {
+            "fieldPath": "luchasGanadas",
+            "columnName": "luchasGanadas",
+            "affinity": "INTEGER",
+            "notNull": true
+          }
+        ],
+        "primaryKey": {
+          "autoGenerate": false,
+          "columnNames": [
+            "nombre"
+          ]
+        }
+      }
+    ],
+    "setupQueries": [
+      "CREATE TABLE IF NOT EXISTS room_master_table (id INTEGER PRIMARY KEY,identity_hash TEXT)",
+      "INSERT OR REPLACE INTO room_master_table (id,identity_hash) VALUES(42, '02262d1db16edcef147223b7cee05525')"
+    ]
+  }
+}

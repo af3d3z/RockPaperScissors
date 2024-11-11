@@ -23,19 +23,21 @@ import androidx.navigation.NavController
 
 @Composable
 fun Login(navController: NavController) {
-    var name by remember { mutableStateOf("") }
+    var username by remember { mutableStateOf("") }
     Column(modifier = Modifier.fillMaxSize(), verticalArrangement = Arrangement.Center, horizontalAlignment = Alignment.CenterHorizontally) {
         Text(
             "Login",
             fontSize = 35.sp,
         )
         OutlinedTextField(
-            value = name,
-            onValueChange = { name = it },
+            value = username,
+            onValueChange = { username = it },
             label = { Text("Username") },
             modifier = Modifier.padding(0.dp, 20.dp)
         )
-        Button(onClick = {}, ) {
+        Button(onClick = {
+            navController.navigate("rps/${username}")
+        }, ) {
             Text("Enter")
         }
     }

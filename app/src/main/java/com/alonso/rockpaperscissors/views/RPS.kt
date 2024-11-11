@@ -117,6 +117,33 @@ fun RPS(modifier: Modifier, username: String){
                 modifier = modifier
                     .padding(5.dp)
                     .size(100.dp)
+                    .clickable {
+                        tiradaMaquina = tiradaMaquina()
+                        when(tiradaMaquina) {
+                            1-> iconoMaquina = R.drawable.rocks
+                            2-> iconoMaquina = R.drawable.paper
+                            3-> iconoMaquina = R.drawable.scissor
+                        }
+                        var puntuacion = checkWinner(playerMove = 1, machineMove = tiradaMaquina, ctx = ctx)
+                        when(puntuacion){
+                            1 -> {
+                                jugador++
+                                ganador = 1
+                            }
+                            2 -> {
+                                maquina++
+                                ganador = 2
+                            }
+                        }
+
+                        if(jugador >= 5){
+                            jugador = 0
+                            popUp = true
+                        }else if (maquina >= 5) {
+                            maquina = 0
+                            popUp = true
+                        }
+                    }
             )
             Image(
                 painter = painterResource(R.drawable.scissor),
@@ -125,7 +152,33 @@ fun RPS(modifier: Modifier, username: String){
                 modifier = modifier
                     .size(100.dp)
                     .padding(5.dp)
+                    .clickable {
+                        tiradaMaquina = tiradaMaquina()
+                        when(tiradaMaquina) {
+                            1-> iconoMaquina = R.drawable.rocks
+                            2-> iconoMaquina = R.drawable.paper
+                            3-> iconoMaquina = R.drawable.scissor
+                        }
+                        var puntuacion = checkWinner(playerMove = 1, machineMove = tiradaMaquina, ctx = ctx)
+                        when(puntuacion){
+                            1 -> {
+                                jugador++
+                                ganador = 1
+                            }
+                            2 -> {
+                                maquina++
+                                ganador = 2
+                            }
+                        }
 
+                        if(jugador >= 5){
+                            jugador = 0
+                            popUp = true
+                        }else if (maquina >= 5) {
+                            maquina = 0
+                            popUp = true
+                        }
+                    }
             )
         }
     }

@@ -38,7 +38,7 @@ import kotlin.random.Random
 import kotlin.random.nextInt
 
 @Composable
-fun RPS(modifier: Modifier){
+fun RPS(modifier: Modifier, username: String){
     var iconoMaquina by rememberSaveable { mutableStateOf(R.drawable.bot) }
     var maquina by rememberSaveable { mutableStateOf(0) }
     var jugador by rememberSaveable { mutableStateOf(0) }

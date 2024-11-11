@@ -11,8 +11,8 @@ import com.alonso.rockpaperscissors.ent.VictoriaEntity
 interface VictoriaDAO {
     @Query("SELECT * FROM victoria")
     suspend fun getAll(): List<VictoriaEntity>
-    @Query("SELECT * FROM victoria WHERE id = :id")
-    suspend fun get(id:Long): VictoriaEntity
+    @Query("SELECT * FROM victoria WHERE username = :username")
+    suspend fun get(username: String): VictoriaEntity
     @Insert
     suspend fun insert(victoria: VictoriaEntity)
     @Update

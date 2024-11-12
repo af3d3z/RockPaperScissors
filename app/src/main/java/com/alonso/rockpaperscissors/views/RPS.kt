@@ -1,9 +1,17 @@
-package com.alonso.rockpaperscissors.views
+package com.alonso.rockpaperscissors
 
 import android.content.Context
+import android.os.Bundle
+import android.util.Log
 import android.widget.Toast
+import androidx.activity.ComponentActivity
+import androidx.activity.compose.setContent
+import androidx.activity.enableEdgeToEdge
 import androidx.compose.animation.AnimatedVisibility
+import androidx.compose.foundation.BorderStroke
 import androidx.compose.foundation.Image
+import androidx.compose.foundation.background
+import androidx.compose.foundation.border
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -15,7 +23,13 @@ import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.wrapContentSize
+import androidx.compose.foundation.shape.RoundedCornerShape
+import androidx.compose.foundation.text.ClickableText
+import androidx.compose.material3.Card
+import androidx.compose.material3.CenterAlignedTopAppBar
 import androidx.compose.material3.HorizontalDivider
+import androidx.compose.material3.Scaffold
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
@@ -29,22 +43,29 @@ import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
+import androidx.compose.ui.text.AnnotatedString
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
-import com.alonso.rockpaperscissors.R
+import androidx.navigation.NavController
+import com.alonso.rockpaperscissors.ent.VictoriaEntity
+import com.alonso.rockpaperscissors.ui.theme.RockPaperScissorsTheme
+import kotlinx.coroutines.launch
 import kotlin.random.Random
 import kotlin.random.nextInt
 
+
+
+
 @Composable
-fun RPS(modifier: Modifier, username: String){
-    var iconoMaquina by rememberSaveable { mutableStateOf(R.drawable.bot) }
+fun RPS(modifier: Modifier, username: String, navController: NavController){
+    var iconoMaquina by rememberSaveable {mutableStateOf(R.drawable.bot)}
     var maquina by rememberSaveable { mutableStateOf(0) }
     var jugador by rememberSaveable { mutableStateOf(0) }
-    var popUp by rememberSaveable{ mutableStateOf(false) }
-    var ganador by remember { mutableStateOf(0) }
-    var tiradaMaquina by rememberSaveable{ mutableStateOf(0) }
+    var popUp by rememberSaveable{mutableStateOf(false)}
+    var ganador by remember {mutableStateOf(0)}
+    var tiradaMaquina by rememberSaveable{mutableStateOf(0)}
     var ctx = LocalContext.current
 
     Column (modifier = modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally) {
@@ -62,14 +83,14 @@ fun RPS(modifier: Modifier, username: String){
                 .size(128.dp)
         )
         Text(
-            text = "Máquina: $maquina",
+            text = "Computer: $maquina",
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
             modifier = modifier
         )
         HorizontalDivider(thickness = 2.dp, color = Color.LightGray, modifier = modifier.fillMaxWidth(0.8f).padding(10.dp))
         Text(
-            text = "Jugador: $jugador",
+            text = "$username: $jugador",
             fontSize = 16.sp,
             fontWeight = FontWeight.Bold,
             modifier = modifier
@@ -77,7 +98,7 @@ fun RPS(modifier: Modifier, username: String){
         Row(modifier = modifier, horizontalArrangement = Arrangement.Center, verticalAlignment = Alignment.CenterVertically) {
             Image(
                 painter = painterResource(R.drawable.rocks),
-                contentDescription = "Piedra",
+                contentDescription = "Rock",
                 contentScale = ContentScale.FillBounds,
                 modifier = modifier
                     .padding(5.dp)
@@ -94,6 +115,10 @@ fun RPS(modifier: Modifier, username: String){
                             1 -> {
                                 jugador++
                                 ganador = 1
+                                MainActivity.coroutine.launch {
+                                    var user = MainActivity.db.victoriaDao().get(username = username)
+                                    MainActivity.db.victoriaDao().update(VictoriaEntity(username=user.username, partidasGanadas = user.partidasGanadas, luchasGanadas = user.luchasGanadas + 1))
+                                }
                             }
                             2 -> {
                                 maquina++
@@ -103,8 +128,14 @@ fun RPS(modifier: Modifier, username: String){
 
                         if(jugador >= 5){
                             jugador = 0
+                            maquina = 0
                             popUp = true
-                        }else if (maquina >= 5) {
+                            MainActivity.coroutine.launch {
+                                var user = MainActivity.db.victoriaDao().get(username = username)
+                                MainActivity.db.victoriaDao().update(VictoriaEntity(username=user.username, partidasGanadas = user.partidasGanadas +1, luchasGanadas = user.luchasGanadas))
+                            }
+                        }else if(maquina >= 5) {
+                            jugador = 0
                             maquina = 0
                             popUp = true
                         }
@@ -112,7 +143,7 @@ fun RPS(modifier: Modifier, username: String){
             )
             Image(
                 painter = painterResource(R.drawable.paper),
-                contentDescription = "Papel",
+                contentDescription = "Paper",
                 contentScale = ContentScale.FillBounds,
                 modifier = modifier
                     .padding(5.dp)
@@ -129,6 +160,10 @@ fun RPS(modifier: Modifier, username: String){
                             1 -> {
                                 jugador++
                                 ganador = 1
+                                MainActivity.coroutine.launch {
+                                    var user = MainActivity.db.victoriaDao().get(username = username)
+                                    MainActivity.db.victoriaDao().update(VictoriaEntity(username=user.username, partidasGanadas = user.partidasGanadas, luchasGanadas = user.luchasGanadas + 1))
+                                }
                             }
                             2 -> {
                                 maquina++
@@ -138,8 +173,14 @@ fun RPS(modifier: Modifier, username: String){
 
                         if(jugador >= 5){
                             jugador = 0
+                            maquina = 0
                             popUp = true
-                        }else if (maquina >= 5) {
+                            MainActivity.coroutine.launch {
+                                var user = MainActivity.db.victoriaDao().get(username = username)
+                                MainActivity.db.victoriaDao().update(VictoriaEntity(username=user.username, partidasGanadas = user.partidasGanadas +1, luchasGanadas = user.luchasGanadas))
+                            }
+                        }else if(maquina >= 5) {
+                            jugador = 0
                             maquina = 0
                             popUp = true
                         }
@@ -147,7 +188,7 @@ fun RPS(modifier: Modifier, username: String){
             )
             Image(
                 painter = painterResource(R.drawable.scissor),
-                contentDescription = "Tijeras",
+                contentDescription = "Scissors",
                 contentScale = ContentScale.FillBounds,
                 modifier = modifier
                     .size(100.dp)
@@ -164,6 +205,10 @@ fun RPS(modifier: Modifier, username: String){
                             1 -> {
                                 jugador++
                                 ganador = 1
+                                MainActivity.coroutine.launch {
+                                    var user = MainActivity.db.victoriaDao().get(username = username)
+                                    MainActivity.db.victoriaDao().update(VictoriaEntity(username=user.username, partidasGanadas = user.partidasGanadas, luchasGanadas = user.luchasGanadas + 1))
+                                }
                             }
                             2 -> {
                                 maquina++
@@ -173,8 +218,14 @@ fun RPS(modifier: Modifier, username: String){
 
                         if(jugador >= 5){
                             jugador = 0
+                            maquina = 0
                             popUp = true
-                        }else if (maquina >= 5) {
+                            MainActivity.coroutine.launch {
+                                var user = MainActivity.db.victoriaDao().get(username = username)
+                                MainActivity.db.victoriaDao().update(VictoriaEntity(username=user.username, partidasGanadas = user.partidasGanadas +1, luchasGanadas = user.luchasGanadas))
+                            }
+                        }else if(maquina >= 5) {
+                            jugador = 0
                             maquina = 0
                             popUp = true
                         }
@@ -182,15 +233,31 @@ fun RPS(modifier: Modifier, username: String){
             )
         }
     }
+    Row(verticalAlignment = Alignment.Bottom, modifier = modifier.fillMaxSize()) {
+        Text(
+            text = "Ver liga",
+            textAlign = TextAlign.Center,
+            modifier = Modifier
+                .fillMaxWidth()
+                .clickable {
+                    navController.navigate("score")
+                }
+        )
+    }
     AnimatedVisibility(visible = popUp) {
-        Column (modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-            Box (contentAlignment = Alignment.Center, modifier = Modifier.fillMaxSize().width(200.dp).height(200.dp) ) {
+        Column (modifier = Modifier.fillMaxSize().clickable { popUp = false }, horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+            Box (
+                contentAlignment = Alignment.Center,
+                modifier = Modifier
+                    .width(200.dp)
+                    .height(200.dp)
+                    .background(Color.White)
+                    .border(BorderStroke(2.dp, Color.Black), RoundedCornerShape(25.dp)) ) {
                 Text(
                     text = if (ganador == 1) "Gana el jugador." else "Gana la máquina.",
                     fontSize = 40.sp,
-                    modifier = Modifier.fillMaxSize().clickable {
-                        popUp = false
-                    },
+                    lineHeight = 40.sp,
+                    modifier = Modifier.wrapContentSize(),
                     textAlign = TextAlign.Center
                 )
 
@@ -200,7 +267,9 @@ fun RPS(modifier: Modifier, username: String){
 }
 
 fun tiradaMaquina(): Int {
-    return Random.nextInt(1..3)
+    val tirada = Random.nextInt(1..3)
+    Log.d(":::RPS", "Máquina: $tirada")
+    return tirada
 }
 
 /**
@@ -211,6 +280,7 @@ fun tiradaMaquina(): Int {
  */
 fun checkWinner(playerMove: Int, machineMove: Int, ctx: Context): Int {
     var state = 0
+    Log.d(":::RPS", "Player Move: $playerMove Machine Move: $machineMove")
     if(playerMove == 1 && machineMove == 3 || playerMove == 2 && machineMove == 1 || playerMove == 3 && machineMove == 2) {
         state = 1
         Toast.makeText(ctx, "Gana el jugador", Toast.LENGTH_LONG).show()

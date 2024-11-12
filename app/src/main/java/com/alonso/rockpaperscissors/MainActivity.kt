@@ -49,10 +49,9 @@ import com.alonso.rockpaperscissors.dal.VictoriaDAO
 import com.alonso.rockpaperscissors.dal.VictoriaDB
 import com.alonso.rockpaperscissors.ui.theme.RockPaperScissorsTheme
 import com.alonso.rockpaperscissors.views.Login
-import com.alonso.rockpaperscissors.views.RPS
+import com.alonso.rockpaperscissors.views.ScoreBoard
 import kotlinx.coroutines.CoroutineScope
-import kotlin.random.Random
-import kotlin.random.nextInt
+
 
 class MainActivity : ComponentActivity() {
     companion object {
@@ -82,10 +81,14 @@ class MainActivity : ComponentActivity() {
                         Scaffold(modifier = Modifier.fillMaxSize()) { innerPadding ->
                             RPS(
                                 Modifier.padding(innerPadding),
-                                backStackEntry.arguments?.getString("username").toString()
+                                backStackEntry.arguments?.getString("username").toString(),
+                                navController
                             )
                         }
                     }
+                }
+                composable("score") {
+                    ScoreBoard()
                 }
             }
         }
